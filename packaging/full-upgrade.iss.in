@@ -23,7 +23,7 @@ OutputBaseFilename=Chaoxing-Full-Upgrade-1.7.7-20261030-win64
 InfoBeforeFile=升级说明.txt
 SetupLogging=yes
 [Languages]
-Name: "chinesesimp"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+Name: "chinesesimp"; MessagesFile: "languages\ChineseSimplified.isl"
 [Files]
 Source: "payload\*"; DestDir: "{tmp}\full-payload"; Flags: ignoreversion recursesubdirs createallsubdirs deleteafterinstall
 Source: "full-manifest.json"; DestDir: "{tmp}"; Flags: deleteafterinstall

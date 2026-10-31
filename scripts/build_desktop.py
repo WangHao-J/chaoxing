@@ -20,6 +20,7 @@ def main():
  (stage/'full-manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),'utf-8')
  shutil.copy2(source/'full_upgrade.py',stage/'full_upgrade.py')
  shutil.copy2(ROOT/'packaging/升级说明.txt',stage/'升级说明.txt')
+ shutil.copytree(ROOT/'packaging/languages',stage/'languages')
  template=(ROOT/'packaging/full-upgrade.iss.in').read_text('utf-8-sig').replace('@OUTPUT_DIR@',str(ROOT/'dist'))
  (stage/'full-upgrade.iss').write_text(template,'utf-8-sig')
  subprocess.run([str(a.iscc.resolve()),str(stage/'full-upgrade.iss')],cwd=stage,check=True)

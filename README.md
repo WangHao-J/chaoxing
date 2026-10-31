@@ -30,7 +30,7 @@ python -m venv .venv
 
 ## 安装包与升级
 
-安装包应从 [本 Fork 的 Releases](https://github.com/WangHao-J/chaoxing/releases) 获取。初次提交提供源码与构建流程；只有实际创建 Release 后，页面才会有可下载的安装包。
+已发布 [1.7.7 全量升级包](https://github.com/WangHao-J/chaoxing/releases/tag/desktop-1.7.7-2)，含 Windows x64 运行环境与 SHA-256 校验文件。该包通过 579 项离线测试，以及安装器升级、资料保留、运行环境导入和回退检查。后续下载见 [Releases](https://github.com/WangHao-J/chaoxing/releases)。
 
 已有本项目旧版本时，选择**原程序目录**升级，先正常退出工作台，不要先卸载。全量包包含运行环境，升级前备份并校验；账号、Cookie、配置、待处理和历史报告保留。需要回退时再次运行同一个全量包并选择恢复程序。
 

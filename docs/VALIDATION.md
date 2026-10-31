@@ -21,6 +21,7 @@ GitHub 构建的文件是另一份产物。工作流必须重新执行离线测�
 - 公开提交的 GitHub Windows 测试：579 项通过，47.016 秒，运行记录 [41197339737](https://github.com/WangHao-J/chaoxing/actions/runs/41197339737)。其中桌面测试成功，首次安装器构建因构建机缺中文语言文件而失败；已将语言文件及许可收录到构建材料。
 - 从公开源码本地重建的 EXE 已在合成旧目录完成：安装文件哈希校验、旧资料逐字节保留、搬移后 Python 导入检查、回退，以及回退后保留新产生的资料。
 - 本地 EXE SHA-256：`951cc4f3e2263ebc74eb4514298b4c6d21886f0508804c17e601283919dc5415`。CI 的后续产物应使用其自身校验文件，不能套用此哈希。
+- 修复后的完整 [GitHub 构建 41197825170](https://github.com/WangHao-J/chaoxing/actions/runs/41197825170) 已成功：579 项测试通过；EXE 安装文件哈希、旧资料保留、搬移后运行环境导入和回退冒烟测试全部通过。[正式版本 desktop-1.7.7-2](https://github.com/WangHao-J/chaoxing/releases/tag/desktop-1.7.7-2) 对应源码提交 `1fa14df24332ddd98a684500e2952a25285a1cda`。
 
 ## 使用范围
 

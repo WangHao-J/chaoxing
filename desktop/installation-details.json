@@ -1,0 +1,9 @@
+{
+  "version": "1.7.7",
+  "source": "https://github.com/Samueli924/chaoxing",
+  "source_commit": "45d2106b16764231c2de2038fb042e71b23d878f",
+  "package_revision": "1.7.7-full-rounds-20261030",
+  "includes_user_data": false,
+  "single_visible_workspace": true,
+  "restart_limit": 3
+}

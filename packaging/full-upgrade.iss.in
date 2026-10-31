@@ -1,0 +1,70 @@
+﻿[Setup]
+AppId={{B3AEBC94-C92F-487B-810E-F17720261030}
+AppName=学习工作台全量升级
+AppVersion=1.7.7
+AppVerName=学习工作台全量覆盖升级（2026-10-30）
+DefaultDirName={code:InstallDir}
+DisableDirPage=no
+AppendDefaultDirName=no
+UsePreviousAppDir=no
+CreateAppDir=yes
+Uninstallable=no
+PrivilegesRequired=lowest
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+CloseApplications=no
+RestartApplications=no
+DisableProgramGroupPage=yes
+Compression=lzma2/fast
+SolidCompression=yes
+MinVersion=10.0
+OutputDir=@OUTPUT_DIR@
+OutputBaseFilename=Chaoxing-Full-Upgrade-1.7.7-20261030-win64
+InfoBeforeFile=升级说明.txt
+SetupLogging=yes
+[Languages]
+Name: "chinesesimp"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+[Files]
+Source: "payload\*"; DestDir: "{tmp}\full-payload"; Flags: ignoreversion recursesubdirs createallsubdirs deleteafterinstall
+Source: "full-manifest.json"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: "full_upgrade.py"; DestDir: "{tmp}"; Flags: deleteafterinstall
+[Icons]
+Name: "{autodesktop}\学习工作台（本机版）"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\account_manager.py"""; WorkingDir: "{app}"; Check: UseIcons
+[Code]
+var ModePage: TInputOptionWizardPage;
+function UseIcons: Boolean;
+begin Result := ExpandConstant('{param:QAISOLATED|0}') <> '1'; end;
+function ValidDir(D: String): Boolean;
+begin Result := FileExists(D+'\account_manager.py') and FileExists(D+'\app\main.py'); end;
+function InstallDir(P: String): String;
+var D: String;
+begin
+ Result := ExpandConstant('{localappdata}\Programs\ChaoxingWorkspace');
+ if RegQueryStringValue(HKCU64,'Software\Microsoft\Windows\CurrentVersion\Uninstall\{D721C746-A603-4372-BCC3-177202610270}_is1','InstallLocation',D) then
+   if ValidDir(D) then begin Result := D; Exit; end;
+ if ValidDir(Result) then Exit;
+ if ValidDir('D:\Applications\Chaoxing') then Result := 'D:\Applications\Chaoxing';
+end;
+procedure InitializeWizard;
+begin
+ ModePage := CreateInputOptionPage(wpSelectDir,'选择操作','升级或恢复程序','升级会先备份旧资料，再覆盖程序文件。',True,False);
+ ModePage.Add('全量覆盖升级，保留账号和设置');
+ ModePage.Add('恢复上一次全量升级前的程序');
+ ModePage.SelectedValueIndex := 0;
+end;
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+begin
+ Result := '';
+ if not ValidDir(ExpandConstant('{app}')) then Result := '请选择原程序目录，应包含 account_manager.py 和 app 文件夹。';
+end;
+procedure CurStepChanged(CurStep: TSetupStep);
+var Code: Integer; Args: String;
+begin
+ if CurStep=ssPostInstall then begin
+  Args := '-B "'+ExpandConstant('{tmp}\full_upgrade.py')+'" --root "'+ExpandConstant('{app}')+'" --payload "'+ExpandConstant('{tmp}\full-payload')+'"';
+  if (ModePage.SelectedValueIndex=1) or (ExpandConstant('{param:ROLLBACK|0}')='1') then Args:=Args+' --rollback';
+  if UseIcons then Args:=Args+' --gui';
+  if not Exec(ExpandConstant('{tmp}\full-payload\python\python.exe'),Args,ExpandConstant('{tmp}'),SW_HIDE,ewWaitUntilTerminated,Code) then RaiseException('无法启动升级，原目录尚未覆盖。');
+  if Code<>0 then RaiseException('升级未成功，请按提示处理后重试。可在 backups 中找到备份。');
+ end;
+end;

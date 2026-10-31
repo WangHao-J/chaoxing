@@ -157,3 +157,26 @@ cache.json
 start*.bat
 .workbuddy/
 myConfig/
+
+# Desktop generated data
+**/accounts/
+**/reports/
+**/backups/
+**/temp/
+**/cache/
+**/.test-temp/
+**/.venv/
+**/__pycache__/
+**/*.pyc
+**/*.log
+**/.run.lock
+**/.workspace*
+**/ai_quiz.json
+**/cookies.txt
+**/profile.json
+**/account_groups.json
+**/*_state*.json
+**/quiz_submissions.json
+dist/
+desktop/python/
+!desktop/app/config.ini

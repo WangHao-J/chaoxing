@@ -1,158 +1,63 @@
-# :computer: 超星学习通自动化完成任务点(命令行版)
+# 学习工作台 · Windows 桌面版
 
-<p align="center">
-    <a href="https://github.com/Samueli924/chaoxing" target="_blank" style="margin-right: 20px; font-style: normal; text-decoration: none;">
-        <img src="https://img.shields.io/github/stars/Samueli924/chaoxing" alt="Github Stars" />
-    </a>
-    <a href="https://github.com/Samueli924/chaoxing" target="_blank" style="margin-right: 20px; font-style: normal; text-decoration: none;">
-        <img src="https://img.shields.io/github/forks/Samueli924/chaoxing" alt="Github Forks" />
-    </a>
-    <a href="https://github.com/Samueli924/chaoxing" target="_blank" style="margin-right: 20px; font-style: normal; text-decoration: none;">
-        <img src="https://img.shields.io/github/languages/code-size/Samueli924/chaoxing" alt="Code-size" />
-    </a>
-    <a href="https://github.com/Samueli924/chaoxing" target="_blank" style="margin-right: 20px; font-style: normal; text-decoration: none;">
-        <img src="https://img.shields.io/github/v/release/Samueli924/chaoxing?display_name=tag&sort=semver" alt="version" />
-    </a>
-</p>
-:muscle: 本项目的最终目的是通过开源消灭所谓的付费刷课平台，希望有能力的朋友都可以为这个项目提交代码，支持本项目的良性发展
+基于 [Samueli924/chaoxing](https://github.com/Samueli924/chaoxing) 的桌面扩展与维护分支，由 [WangHao-J](https://github.com/WangHao-J) 维护。本 Fork 保留上游命令行项目和历史，在 `desktop/` 中提供多账号工作台。
 
-:star: 觉得有帮助的朋友可以给个Star
+> 桌面维护版本：**1.7.7 / full-rounds-20261030**。桌面所内置的上游代码基线为 `45d2106b16764231c2de2038fb042e71b23d878f`；本分支没有承诺自动兼容上游之后的所有变更。
 
-## :point_up: 更新通知
-20241021更新通知： 感谢[sz134055](https://github.com/sz134055)提交代码[PR #360](https://github.com/Samueli924/chaoxing/pull/360)，**添加了对题库答题的支持**  
+## 桌面版增加了什么
 
-## :books: 使用方法
+- 一个可见工作台管理多个账号，每个账号使用独立后台、会话和资料目录。
+- 登录成功后自动读取课程；账号分类、搜索和模式选择。
+- 统一 API 设置，Windows 用户级加密保存密钥。
+- 运行记录、可关闭提示、分账号待处理与运行报告。
+- 媒体时长估计显示读取覆盖范围，未完整读取时提供已知下限。
+- 失败章节保留原因，继续其他可执行章节；首轮结束后最多重跑三轮，共最多四轮。
+- 已确认完成的任务不重复执行；提交结果不确定时保留核对记录。
+- 全量离线升级：覆盖前备份、账号和配置保留、失败恢复及程序回退。
 
-### 源码运行（Python 3.13+）
+## 从源码运行
 
-1. clone 项目至本地
+推荐 Windows 10/11 x64、Python 3.13，需支持 Tkinter。安装依赖后运行：
 
-```bash
-git clone --depth=1 https://github.com/Samueli924/chaoxing 
-cd chaoxing
+```powershell
+cd desktop
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe account_manager.py
 ```
 
-2. 安装依赖
+运行时会在 `desktop/` 下生成账号、设置和报告。它们已经加入忽略规则，请勿将个人配置复制进公开仓库。
 
-```bash
-pip install -r requirements.txt
-```
-或使用 `pip install .`（通过 pyproject.toml 安装依赖）
+## 安装包与升级
 
-3. (可选直接运行)
+安装包应从 [本 Fork 的 Releases](https://github.com/WangHao-J/chaoxing/releases) 获取。初次提交提供源码与构建流程；只有实际创建 Release 后，页面才会有可下载的安装包。
 
-```bash
-python main.py
-```
+已有本项目旧版本时，选择**原程序目录**升级，先正常退出工作台，不要先卸载。全量包包含运行环境，升级前备份并校验；账号、Cookie、配置、待处理和历史报告保留。需要回退时再次运行同一个全量包并选择恢复程序。
 
-4. (可选配置文件运行)
+详见 [使用说明](desktop/使用说明.md)、[构建与发布](docs/BUILDING.md)、[验证范围](docs/VALIDATION.md)。
 
-> 复制config_template.ini文件为config.ini文件，修改文件内的账号密码内容
+## 项目结构
 
-```bash
-python main.py -c config.ini
-```
+| 路径 | 用途 |
+| --- | --- |
+| `desktop/` | 桌面程序、空白配置和离线测试 |
+| `desktop/app/` | 桌面版使用的上游代码及适配 |
+| `scripts/` | 可移植构建与发布前检查 |
+| `packaging/` | 全量升级安装器模板 |
+| `docs/` | 设计、构建、验证和依赖许可说明 |
+| 根目录 `main.py`、`api/` 等 | 保留的上游命令行项目 |
 
-5. (可选命令行运行)
+上游使用方式见 [原始 README](docs/UPSTREAM_README.md)。
 
-```bash
-python main.py -u 手机号 -p 密码 -l 课程ID1,课程ID2,课程ID3...(可选) -a [retry|ask|continue](可选)
-```
+## 验证与限制
 
-> Tips:  
-> 如果已安装低版本 Python 推荐使用 `uv` 运行：
+发布整理前，桌面维护分支已有 571 项离线回归通过；全量升级另有 8 项保护测试及 1.0.0 程序目录升级、启动、回退实测。仓库整理后的测试结果以 `docs/VALIDATION.md` 和 GitHub Actions 为准，不将历史结果冒充新一次 CI 成绩。
 
-```bash
-uv run --python 3.13 main.py
-```
+平台页面、登录和访问限制可能变化。离线测试通过不等于每门真实课程都可完成；课程结果以平台确认状态为准。AI 输出需要判断和核对，程序不保证答案正确或课程通过。请仅在获得授权的账号和符合课程要求的场景中使用。
 
-使用配置文件运行 ：
-```bash
-uv run --python 3.13 main.py -c config.ini
-```
+## 贡献与来源
 
-### 打包文件运行
-1. 从最新[Releases](https://github.com/Samueli924/chaoxing/releases)中下载exe文件
-2. (可选直接运行) 双击运行即可
-3. (可选配置文件运行) 下载config_template.ini文件保存为config.ini文件，修改文件内的账号密码内容, 执行 `./chaoxing.exe -c config.ini`
-4. (可选命令行运行)`./chaoxing.exe -u "手机号" -p "密码" -l 课程ID1,课程ID2,课程ID3...(可选) -a [retry|ask|continue](可选)`
+本项目包含 AI 辅助开发。功能设计、代码适配和测试应以仓库实际提交为依据；欢迎提交可复现问题和不含隐私的测试案例。新增桌面功能不代表全部平台访问能力由本分支原创。
 
-### Docker运行
-1. 构建Docker镜像
-   ```bash
-   docker build -t chaoxing .
-   ```
+本项目及其衍生修改按 **GPL-3.0** 发布，保留上游版权和许可声明。打包的第三方依赖分别遵循自身许可证，见 [第三方说明](docs/THIRD_PARTY_NOTICES.md)。
 
-2. 运行Docker容器
-   ```bash
-   # 直接运行（将使用默认配置模板）
-   docker run -it chaoxing
-   
-   # 使用自定义配置文件运行
-   docker run -it -v /本地路径/config.ini:/config/config.ini chaoxing
-   ```
-
-3. 配置说明
-   - Docker版本默认使用挂载到 `/config/config.ini` 的配置文件
-   - 首次运行时，会自动将 `config_template.ini` 复制到该位置作为模板
-   - 可以将本地编辑好的配置文件挂载到容器中，按照上述示例命令操作
-
-### 题库配置说明
-
-在你的配置文件中找到`[tiku]`，按照注释填写想要使用的题库名（即`provider`，大小写要一致），并填写必要信息，如token，然后在启动时添加`-c [你的配置文件路径]`即可。
-
-题库会默认使用根目录下的`config.ini`文件中的配置，所以你可以复制配置模板（参照前面的说明）命名为`config.ini`，并只配置题库项`[tiku]`，这样即使你不填写账号之类的信息，不使用`-c`参数指定配置文件，题库也会根据这个配置文件自动配置并启用。
-
-对于那些有章节检测且任务点需要解锁的课程，必须配置题库。
-
-**提交模式与答题**
-不配置题库（既不提供配置文件，也没有放置默认配置文件`config.ini`或填写要使用的题库）视为不使用题库，对于章节检测等需要答题的任务会自动跳过。
-题库覆盖率：搜到的题目占总题目的比例
-提交模式`submit`值为
-
-- `true`：会答完题，达到题库题目覆盖率提交，没达到只保存，**正确率不做保证**。
-- `false`：会答题，但是不会提交，仅保存搜到答案的，随后你可以自行前往学习通查看、修改、提交。**任何填写不正确的`submit`值会被视为`false`**
-
-> 题库名即`answer.py`模块中根据`Tiku`类实现的具体题库类，例如`TikuYanxi`（言溪题库），在填写时，请务必保持大小写一致。
-
-### 已关闭任务点处理配置说明
-
-在配置文件的 `[common]` 部分，可以通过 `notopen_action` 选项配置遇到已关闭任务点时的处理方式:
-
-- `retry` (默认): 遇到关闭的任务点时尝试重新完成上一个任务点，如果连续重试 3 次仍然失败 (或未配置题库及自动提交) 则停止
-- `ask`: 遇到关闭的任务点时询问用户是否继续。选择继续后会自动跳过连续的关闭任务点，直到遇到开放的任务点
-- `continue`: 自动跳过所有关闭的任务点，继续检查和完成后续任务点
-
-也可以通过命令行参数 `-a` 或 `--notopen-action` 指定处理方式，例如：
-
-```bash
-python main.py -a ask  # 使用询问模式
-```
-
-### 章节学习次数配置说明
-
-在配置文件的 `[common]` 部分，可以通过下面两个选项控制章节学习次数功能：
-
-- `add_learning_count = false`：是否在完成刷课任务后，继续对课程章节执行学习次数增加
-- `target_count = 100`：章节学习次数的目标总次数，程序会轮询课程章节直到达到该次数
-
-当前实现会先完成所选课程的任务点，再统一执行章节学习次数增加流程。如果开启了 `add_learning_count`，它会作为刷课完成后的追加步骤执行，而不是独立模式。
-
-**外部通知配置说明**
-
-这功能会在所有课程学习任务结束后，或是程序出现错误时，使用外部通知服务推送消息告知你（~~有用但不多~~）
-
-与题库配置类似，不填写视为不使用，按照注释填写想要使用的外部通知服务（也是`provider`，大小写要一致），并填写必要的`url`
-
-## :heart: CONTRIBUTORS
-
-![Alt](https://repobeats.axiom.co/api/embed/d3931e84b4b2f17cbe60cafedb38114bdf9931cb.svg "Repobeats analytics image")  
-
-<a style="margin-top: 15px" href="https://github.com/Samueli924/chaoxing/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=Samueli924/chaoxing" />
-</a>
-
-## :warning: 免责声明
-- 本代码遵循 [GPL-3.0 License](https://github.com/Samueli924/chaoxing/blob/main/LICENSE) 协议，允许**开源/免费使用和引用/修改/衍生代码的开源/免费使用**，不允许**修改和衍生的代码作为闭源的商业软件发布和销售**，禁止**使用本代码盈利**，以此代码为基础的程序**必须**同样遵守 [GPL-3.0 License](https://github.com/Samueli924/chaoxing/blob/main/LICENSE) 协议
-- 本代码仅用于**学习讨论**，禁止**用于盈利**
-- 他人或组织使用本代码进行的任何**违法行为**与本人无关

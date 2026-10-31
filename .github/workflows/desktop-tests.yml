@@ -1,0 +1,73 @@
+name: Desktop offline tests
+on:
+  push:
+    paths: ['desktop/**', 'scripts/**', 'packaging/**', '.github/workflows/desktop-tests.yml']
+  pull_request:
+    paths: ['desktop/**', 'scripts/**', 'packaging/**', '.github/workflows/desktop-tests.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  desktop:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r desktop/requirements.txt
+      - run: python scripts/check_public_source.py
+      - name: Offline behavior and UI tests
+        working-directory: desktop
+        shell: pwsh
+        run: |
+          $env:PYTHONUTF8='1'
+          New-Item -ItemType Directory -Force -Path .test-temp | Out-Null
+          $env:TEMP=(Resolve-Path .test-temp).Path
+          $env:TMP=$env:TEMP
+          python -B -m unittest discover -q
+  installer:
+    needs: desktop
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: windows-2022
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r desktop/requirements.txt
+      - name: Build clean full upgrade installer
+        shell: pwsh
+        run: |
+          $env:PYTHONUTF8='1'
+          $runtime=python -c "import sys; print(sys.base_prefix)"
+          $compiler="${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (!(Test-Path -LiteralPath $compiler)) { throw 'Inno Setup compiler missing' }
+          python scripts/build_desktop.py --runtime $runtime --iscc $compiler
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify installer and data retention
+        shell: pwsh
+        run: |
+          $env:PYTHONUTF8='1'
+          $installer=(Get-ChildItem dist -Filter *.exe | Select-Object -First 1).FullName
+          python scripts/smoke_installer.py $installer
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-full-upgrade
+          path: |
+            dist/*.exe
+            dist/*.sha256
+          retention-days: 30
+      - name: Create reviewable release draft
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag='desktop-1.7.7-' + $env:GITHUB_RUN_NUMBER
+          $assets=@(Get-ChildItem dist -File | Where-Object { $_.Name -match '\.(exe|sha256)$' } | ForEach-Object { $_.FullName })
+          gh release create $tag @assets --draft --target $env:GITHUB_SHA --title "学习工作台 1.7.7 全量升级（构建 $env:GITHUB_RUN_NUMBER）" --notes-file docs/RELEASE_NOTES.md

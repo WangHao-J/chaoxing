@@ -40,7 +40,7 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install -r desktop/requirements.txt
-      - name: Build clean full upgrade installer
+      - name: Build complete desktop installer
         shell: pwsh
         run: |
           $env:PYTHONUTF8='1'
@@ -53,21 +53,22 @@ jobs:
         shell: pwsh
         run: |
           $env:PYTHONUTF8='1'
-          $installer=(Get-ChildItem dist -Filter *.exe | Select-Object -First 1).FullName
-          python scripts/smoke_installer.py $installer
+          $installer=(Get-ChildItem dist -Filter 'Chaoxing-Desktop-Setup-*.exe' | Select-Object -First 1).FullName
+          python scripts/smoke_setup.py --installer $installer --manifest dist/setup-build/setup-manifest.json --output dist/setup-verification.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@v4
         with:
-          name: desktop-full-upgrade
+          name: desktop-setup
           path: |
             dist/*.exe
             dist/*.sha256
+            dist/setup-verification.json
           retention-days: 30
       - name: Create reviewable release draft
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $tag='desktop-1.7.7-' + $env:GITHUB_RUN_NUMBER
+          $tag='desktop-setup-1.7.7-' + $env:GITHUB_RUN_NUMBER
           $assets=@(Get-ChildItem dist -File | Where-Object { $_.Name -match '\.(exe|sha256)$' } | ForEach-Object { $_.FullName })
-          gh release create $tag @assets --draft --target $env:GITHUB_SHA --title "学习工作台 1.7.7 全量升级（构建 $env:GITHUB_RUN_NUMBER）" --notes-file docs/RELEASE_NOTES.md
+          gh release create $tag @assets --draft --target $env:GITHUB_SHA --title "学习工作台 1.7.7 完整安装包（构建 $env:GITHUB_RUN_NUMBER）" --notes-file docs/RELEASE_NOTES.md

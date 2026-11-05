@@ -1,0 +1,56 @@
+﻿[Setup]
+AppId={code:ApplicationId}
+AppName=学习工作台
+AppVersion=1.7.7
+AppVerName=学习工作台 1.7.7
+AppPublisher=WangHao-J
+AppPublisherURL=https://github.com/WangHao-J/chaoxing
+DefaultDirName={localappdata}\Programs\ChaoxingWorkspace
+DefaultGroupName=学习工作台
+DisableDirPage=no
+DisableProgramGroupPage=yes
+UsePreviousAppDir=yes
+UsePreviousLanguage=no
+PrivilegesRequired=lowest
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
+CloseApplications=yes
+RestartApplications=no
+Compression=lzma2/max
+SolidCompression=yes
+MinVersion=10.0
+OutputDir=@OUTPUT_DIR@
+OutputBaseFilename=Chaoxing-Desktop-Setup-1.7.7-20261102-win64
+Uninstallable=yes
+CreateUninstallRegKey=not IsIsolatedTest
+UninstallDisplayName=学习工作台
+SetupLogging=yes
+[Languages]
+Name: "chinesesimp"; MessagesFile: "languages\ChineseSimplified.isl"
+[Tasks]
+Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "快捷方式："; Check: IsNormalInstall
+[Files]
+Source: "payload\*"; DestDir: "{app}"; Excludes: "app\config.ini"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "payload\app\config.ini"; DestDir: "{app}\app"; Flags: onlyifdoesntexist uninsneveruninstall
+[Icons]
+Name: "{autoprograms}\学习工作台\学习工作台"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\account_manager.py"""; WorkingDir: "{app}"; Check: IsNormalInstall
+Name: "{autodesktop}\学习工作台（本机版）"; Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\account_manager.py"""; WorkingDir: "{app}"; Tasks: desktopicon; Check: IsNormalInstall
+Name: "{autoprograms}\学习工作台\卸载学习工作台"; Filename: "{uninstallexe}"; Check: IsNormalInstall
+[Run]
+Filename: "{app}\python\pythonw.exe"; Parameters: """{app}\account_manager.py"""; WorkingDir: "{app}"; Description: "启动学习工作台"; Flags: nowait postinstall skipifsilent; Check: IsNormalInstall
+[Code]
+function IsIsolatedTest: Boolean;
+begin
+  Result := ExpandConstant('{param:QAISOLATED|0}') = '1';
+end;
+
+function IsNormalInstall: Boolean;
+begin
+  Result := not IsIsolatedTest;
+end;
+
+function ApplicationId(Param: String): String;
+begin
+  Result := 'ChaoxingDesktop-7A903121-0FAE-48C9-B95D-0C13D09F03C0';
+  if IsIsolatedTest then Result := Result + '-QA';
+end;
